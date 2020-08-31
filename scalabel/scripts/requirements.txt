@@ -1,0 +1,8 @@
+autopep8
+boto3
+pyyaml
+boto3
+numpy
+pycodestyle
+pylint
+colorama
