@@ -19,7 +19,8 @@ WORKDIR /opt/scalabel
 RUN chmod -R a+w /opt/scalabel
 
 COPY package*.json ./
-RUN npm install
+RUN npm install -g npm-cli-login \
+    && npm install
 
 COPY scripts ./scripts
 RUN bash scripts/install_go_packages.sh
