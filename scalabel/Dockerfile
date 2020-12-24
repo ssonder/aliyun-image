@@ -1,28 +1,33 @@
 FROM ubuntu:18.04
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        npm \
-        nodejs \
-        curl \
-        git \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    npm \
+    nodejs \
+    curl \
+    git &&\
+    rm -rf /var/lib/apt/lists/*
 
-RUN curl -o go.tgz -O https://dl.google.com/go/go1.11.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go.tgz \
-    && rm go.tgz
-
+RUN curl -o go.tgz -O https://dl.google.com/go/go1.11.linux-amd64.tar.gz; \
+    tar -C /usr/local -xzf go.tgz; \
+    rm go.tgz; \
+    export PATH="/usr/local/go/bin:$PATH";
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 WORKDIR /opt/scalabel
+RUN chmod -R a+w /opt/scalabel
+
+COPY package*.json ./
+RUN npm install
+
+COPY scripts ./scripts
+RUN bash scripts/install_go_packages.sh
 
 COPY . .
-RUN npm install \
-    && sh scripts/install_go_packages.sh \
-    && ./node_modules/.bin/webpack --config webpack.config.js --mode=development \
-    && go build -i -o bin/scalabel ./server/http
+RUN ./node_modules/.bin/npx webpack --config webpack.config.js --mode=production; \
+    rm -f app/dist/tsconfig.tsbuildinfo
+RUN go build -i -o bin/scalabel ./server/http
 
 CMD ['/opt/scalabel/bin/scalabel', '--config', '/opt/scalabel/data/config.yml']
 
