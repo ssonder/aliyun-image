@@ -9,9 +9,9 @@ RUN apt-get update \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -o go.tgz -O https://dl.google.com/go/go1.11.linux-amd64.tar.gz; \
-    tar -C /usr/local -xzf go.tgz; \
-    rm go.tgz; \
+RUN curl -o go.tgz -O https://dl.google.com/go/go1.11.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go.tgz \
+    && rm go.tgz
 
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
