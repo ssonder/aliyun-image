@@ -2,11 +2,11 @@ FROM ubuntu:18.04
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    npm \
-    nodejs \
-    curl \
-    git \
+        ca-certificates \
+        npm \
+        nodejs \
+        curl \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -o go.tgz -O https://dl.google.com/go/go1.11.linux-amd64.tar.gz \
@@ -18,9 +18,11 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 WORKDIR /opt/scalabel
 
-COPY scripts/install_go_packages.sh .
-RUN sh install_go_packages.sh \
-    && rm -rf install_go_packages.sh
+COPY . .
+RUN npm install \
+    && sh scripts/install_go_packages.sh \
+    && ./node_modules/.bin/webpack --config webpack.config.js --mode=development \
+    && go build -i -o bin/scalabel ./server/http
 
 CMD ['/opt/scalabel/bin/scalabel', '--config', '/opt/scalabel/data/config.yml']
 
