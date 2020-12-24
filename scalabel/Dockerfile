@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-
+EXPOSE 8686
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     npm \
@@ -28,7 +28,3 @@ COPY . .
 RUN ./node_modules/.bin/npx webpack --config webpack.config.js --mode=production; \
     rm -f app/dist/tsconfig.tsbuildinfo
 RUN go build -i -o bin/scalabel ./server/http
-
-CMD ['/opt/scalabel/bin/scalabel', '--config', '/opt/scalabel/data/config.yml']
-
-EXPOSE 8686
